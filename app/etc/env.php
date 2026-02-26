@@ -2,7 +2,7 @@
 return [
     'db' => [
         'host' => 'localhost',
-        'dbname' => 'solomono_test',
+        'dbname' => 'test_solomono',
         'user' => 'root',
         'password' => 'rootpass',
     ]

@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/autoload.php';
+require_once  '../autoload.php';
 
 use code\Repositories\Category;
 use code\Repositories\Product;
