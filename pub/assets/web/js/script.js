@@ -21,7 +21,11 @@ $(document).ready(function () {
         $.get('assets/web/fetchProducts.php', {category_id: categoryId, sort: sort}, function (data) {
             $('#product-list').html(data);
             $('.category-item').removeClass('active');
-            $('.category-item[data-id="' + categoryId + '"]').addClass('active');
+            if (categoryId === null || categoryId === '') {
+                $('.category-item[data-id=""]').addClass('active');
+            } else {
+                $('.category-item[data-id="' + categoryId + '"]').addClass('active');
+            }
         });
     }
 

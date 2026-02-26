@@ -2,7 +2,6 @@
 
 namespace code\Repositories;
 
-require_once '../autoload.php';
 
 use code\Interfaces\EntityInterface;
 use etc\Database;

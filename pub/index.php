@@ -28,6 +28,11 @@ $products = $productCollection->getAll();
         <div class="col-3">
             <h4>Категорії</h4>
             <ul id="category-list">
+                <li>
+                    <a href="#" class="category-item" data-id="">
+                        Всі товари
+                    </a>
+                </li>
                 <?php foreach ($categories as $category): ?>
                     <li>
                         <a href="#" class="category-item" data-id="<?= $category['id'] ?>">
