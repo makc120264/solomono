@@ -84,4 +84,85 @@ class Category implements EntityInterface
         $stmt = $this->pdo->prepare("DELETE FROM categories WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    /**
+     * Builds a category tree without recursion using an iterative approach.
+     *
+     * @param array $categories Array of categories with 'categories_id' and 'parent_id'
+     * @return array
+     */
+    public function buildTree(array $categories): array
+    {
+        $tree = [];
+        $refs = [];
+        
+        foreach ($categories as $cat) {
+            $id = $cat['categories_id'];
+            $refs[$id] = [];
+        }
+
+        foreach ($categories as $cat) {
+            $id = $cat['categories_id'];
+            $parentId = $cat['parent_id'];
+            if ($parentId == 0) {
+                $tree[$id] = &$refs[$id];
+            } else {
+                if (isset($refs[$parentId])) {
+                    $refs[$parentId][$id] = &$refs[$id];
+                }
+            }
+        }
+
+        foreach ($refs as $id => &$children) {
+            if (empty($children)) {
+                $children = $id;
+            }
+        }
+
+        return $tree;
+    }
+
+    /**
+     * Builds a category tree using recursion.
+     *
+     * @param array $categories Array of categories with 'categories_id' and 'parent_id'
+     * @return array
+     */
+    public function buildTreeRecursive(array $categories): array
+    {
+        $grouped = [];
+        foreach ($categories as $cat) {
+            $grouped[$cat['parent_id']][] = $cat['categories_id'];
+        }
+
+        $tree = [];
+        if (isset($grouped[0])) {
+            foreach ($grouped[0] as $id) {
+                $tree[$id] = $this->buildBranch($id, $grouped);
+            }
+        }
+
+        return $tree;
+    }
+
+    /**
+     * Recursive helper to build a branch.
+     *
+     * @param int $parentId
+     * @param array $grouped
+     * @return array|int
+     */
+    private function buildBranch(int $parentId, array &$grouped): array|int
+    {
+        if (!isset($grouped[$parentId])) {
+            return $parentId;
+        }
+
+        $result = [];
+        foreach ($grouped[$parentId] as $childId) {
+            $result[$childId] = $this->buildBranch($childId, $grouped);
+        }
+
+        return $result;
+    }
 }

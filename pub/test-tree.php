@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../autoload.php';
+use code\Repositories\Category;
+
 $startTime = microtime(true);
 ob_start();
 $config = include __DIR__ . '/../app/etc/env.php';
@@ -17,30 +20,9 @@ try {
     $stmt = $pdo->query("SELECT categories_id, parent_id FROM categories_test2");
     $categories = $stmt->fetchAll();
 
-    $tree = [];
-    $refs = [];
-    foreach ($categories as $cat) {
-        $id = $cat['categories_id'];
-        $refs[$id] = [];
-    }
-
-    foreach ($categories as $cat) {
-        $id = $cat['categories_id'];
-        $parentId = $cat['parent_id'];
-        if ($parentId == 0) {
-            $tree[$id] = &$refs[$id];
-        } else {
-            if (isset($refs[$parentId])) {
-                $refs[$parentId][$id] = &$refs[$id];
-            }
-        }
-    }
-
-    foreach ($refs as $id => &$children) {
-        if (empty($children)) {
-            $children = $id;
-        }
-    }
+    $categoryRepo = new Category();
+    $tree = $categoryRepo->buildTreeRecursive($categories);
+//    $tree = $categoryRepo->buildTree($categories);
 
     // Output of the result
 //    echo json_encode($tree, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
