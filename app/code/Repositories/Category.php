@@ -86,7 +86,7 @@ class Category implements EntityInterface
     }
 
     /**
-     * Builds a category tree without recursion using an iterative approach.
+     * Builds a category tree using an iterative approach.
      *
      * @param array $categories Array of categories with 'categories_id' and 'parent_id'
      * @return array
