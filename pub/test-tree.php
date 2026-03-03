@@ -17,38 +17,28 @@ try {
     $stmt = $pdo->query("SELECT categories_id, parent_id FROM categories_test2");
     $categories = $stmt->fetchAll();
 
-    // Group by parent_id
-    $grouped = [];
-    foreach ($categories as $cat) {
-        $grouped[$cat['parent_id']][] = $cat['categories_id'];
-    }
-
-    /**
-     * Recursive function for constructing a tree
-     * 
-     * @param int $parentId
-     * @param array $grouped
-     * @return array|int
-     */
-    function buildCategoryTree(int $parentId, array &$grouped): int|array
-    {
-        if (!isset($grouped[$parentId])) {
-            return $parentId;
-        }
-
-        $result = [];
-        foreach ($grouped[$parentId] as $childId) {
-            $result[$childId] = buildCategoryTree($childId, $grouped);
-        }
-
-        return $result;
-    }
-
-    // Let's start from the top level (parent_id = 0)
     $tree = [];
-    if (isset($grouped[0])) {
-        foreach ($grouped[0] as $topId) {
-            $tree[$topId] = buildCategoryTree($topId, $grouped);
+    $refs = [];
+    foreach ($categories as $cat) {
+        $id = $cat['categories_id'];
+        $refs[$id] = [];
+    }
+
+    foreach ($categories as $cat) {
+        $id = $cat['categories_id'];
+        $parentId = $cat['parent_id'];
+        if ($parentId == 0) {
+            $tree[$id] = &$refs[$id];
+        } else {
+            if (isset($refs[$parentId])) {
+                $refs[$parentId][$id] = &$refs[$id];
+            }
+        }
+    }
+
+    foreach ($refs as $id => &$children) {
+        if (empty($children)) {
+            $children = $id;
         }
     }
 
