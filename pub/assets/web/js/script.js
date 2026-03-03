@@ -19,13 +19,41 @@ $(document).ready(function () {
     // Updating the product list with an AJAX request
     function updateProducts(categoryId, sort) {
         $.get('assets/web/fetchProducts.php', {category_id: categoryId, sort: sort}, function (data) {
-            $('#product-list').html(data);
+            let html = '';
+            if (data && data.length > 0) {
+                data.forEach(function (product) {
+                    html += '<div class="col-md-4 col-sm-6 col-12 product-item">';
+                    html += '<h5>' + escapeHtml(product.name) + '</h5>';
+                    html += '<p>Цена: ' + parseFloat(product.price).toLocaleString('uk-UA', {minimumFractionDigits: 2}) + ' грн.</p>';
+                    html += '<button class="btn btn-primary buy-btn" ' +
+                        'data-name="' + escapeHtml(product.name) + '" ' +
+                        'data-price="' + product.price + '">Придбати</button>';
+                    html += '</div>';
+                });
+            } else {
+                html = '<div class="col-12"><p>Немає товарів у цій категорії.</p></div>';
+            }
+            $('#product-list').html(html);
+
             $('.category-item').removeClass('active');
             if (categoryId === null || categoryId === '') {
                 $('.category-item[data-id=""]').addClass('active');
             } else {
                 $('.category-item[data-id="' + categoryId + '"]').addClass('active');
             }
+        }, 'json');
+    }
+
+    function escapeHtml(text) {
+        let map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function (m) {
+            return map[m];
         });
     }
 
