@@ -21,8 +21,8 @@ try {
     $categories = $stmt->fetchAll();
 
     $categoryRepo = new Category();
-    $tree = $categoryRepo->buildTreeRecursive($categories);
-//    $tree = $categoryRepo->buildTree($categories);
+//    $tree = $categoryRepo->buildTreeRecursive($categories);
+    $tree = $categoryRepo->buildTree($categories);
 
     // Output of the result
 //    echo json_encode($tree, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
